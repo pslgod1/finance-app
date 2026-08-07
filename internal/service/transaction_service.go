@@ -33,3 +33,27 @@ func (t *TransactionService) GetTransactions(ctx context.Context, userID int) ([
 func (t *TransactionService) GetTransactionByID(ctx context.Context, id int) (*model.Transaction, error) {
 	return t.repo.GetTransactionByID(ctx, id)
 }
+
+func (t *TransactionService) UpdateTransaction(
+	ctx context.Context,
+	id int,
+	transactionType string,
+	amount float64,
+	category string,
+	description string,
+) (*model.Transaction, error) {
+
+	_, err := t.GetTransactionByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return t.repo.UpdateTransaction(ctx, id, transactionType, amount, category, description)
+}
+
+func (t *TransactionService) DeleteTransaction(ctx context.Context, id int) error {
+	_, err := t.GetTransactionByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return t.repo.DeleteTransaction(ctx, id)
+}
