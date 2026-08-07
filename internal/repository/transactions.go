@@ -114,3 +114,14 @@ func (r *Repository) UpdateTransaction(
 	}
 	return transaction, nil
 }
+
+func (r *Repository) DeleteTransaction(ctx context.Context, id int) error {
+	sqlQuery := `
+	DELETE FROM transactions WHERE id = $1
+	`
+	_, err := r.Pool.Exec(ctx, sqlQuery, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
