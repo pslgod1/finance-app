@@ -107,3 +107,61 @@ func (h *TransactionHandler) HandleGetTransactions(w http.ResponseWriter, r *htt
 		return
 	}
 }
+
+func (h *TransactionHandler) HandleUpdateTransaction(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		errResp := dto.NewErrorResponse(fmt.Errorf("некорректный id"))
+		http.Error(w, errResp.ToString(), http.StatusBadRequest)
+		return
+	}
+
+	var req dto.TransactionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusBadRequest)
+		return
+	}
+
+	transaction, err := h.UpdateTransaction(r.Context(), id, req.Type, req.Amount, req.Category, req.Description)
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+
+	transactionResponse := dto.TransactionResponse{
+		ID:          transaction.ID,
+		UserID:      transaction.UserID,
+		Type:        transaction.Type,
+		Amount:      transaction.Amount,
+		Category:    transaction.Category,
+		Description: transaction.Description,
+		CreatedAt:   transaction.CreatedAt,
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(transactionResponse); err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *TransactionHandler) HandleDeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusBadRequest)
+		return
+	}
+	err = h.DeleteTransaction(r.Context(), id)
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}

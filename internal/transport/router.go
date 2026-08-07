@@ -23,8 +23,11 @@ func (router *Router) SetupRoutes() *mux.Router {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/api/users", router.userHandler.HandleCreateUser).Methods("POST")
 	muxRouter.HandleFunc("/api/users/{id}", router.userHandler.HandleGetUser).Methods("GET")
+
 	muxRouter.HandleFunc("/api/users/{userId}/transactions", router.transactionHandler.HandleCreateTransaction).Methods("POST")
 	muxRouter.HandleFunc("/api/users/{userId}/transactions", router.transactionHandler.HandleGetTransactions).Methods("GET")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleUpdateTransaction).Methods("PUT")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleDeleteTransaction).Methods("DELETE")
 
 	return muxRouter
 }
