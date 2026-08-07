@@ -82,3 +82,35 @@ func (r *Repository) GetTransactionByID(ctx context.Context, id int) (*model.Tra
 	}
 	return transaction, nil
 }
+
+func (r *Repository) UpdateTransaction(
+	ctx context.Context,
+	id int,
+	transactionType string,
+	amount float64,
+	category string,
+	description string,
+) (*model.Transaction, error) {
+
+	sqlQuery := `
+	UPDATE transactions
+	SET type = $1, amount = $2, category = $3, description = $4
+	WHERE id = $5
+	RETURNING id, user_id, type, amount, category, description, created_at
+`
+	transaction := &model.Transaction{}
+	err := r.Pool.QueryRow(ctx, sqlQuery, transactionType, amount, category, description, id).Scan(
+		&transaction.ID,
+		&transaction.UserID,
+		&transaction.Type,
+		&transaction.Amount,
+		&transaction.Category,
+		&transaction.Description,
+		&transaction.CreatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}
