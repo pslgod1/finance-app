@@ -35,10 +35,14 @@ func main() {
 	log.Println("Успешное подключение к БД")
 
 	repo := repository.NewRepository(dbpool)
+
 	userService := service.NewUserService(repo)
 	userHandler := transport.NewUserHandler(userService)
 
-	router := transport.NewRouter(userHandler)
+	transactionService := service.NewTransactionService(repo)
+	transactionHandler := transport.NewTransactionHandler(transactionService)
+
+	router := transport.NewRouter(userHandler, transactionHandler)
 
 	log.Printf("Сервер запущен на порту %s", port)
 	log.Fatal(router.Start(port))

@@ -60,3 +60,25 @@ func (r *Repository) GetTransactionsByUserID(ctx context.Context, userID int) ([
 	}
 	return transactions, nil
 }
+
+func (r *Repository) GetTransactionByID(ctx context.Context, id int) (*model.Transaction, error) {
+	sqlQuery := `
+    SELECT id, user_id, type, amount, category, description, created_at
+    FROM transactions
+    WHERE id = $1
+    `
+	transaction := &model.Transaction{}
+	err := r.Pool.QueryRow(ctx, sqlQuery, id).Scan(
+		&transaction.ID,
+		&transaction.UserID,
+		&transaction.Type,
+		&transaction.Amount,
+		&transaction.Category,
+		&transaction.Description,
+		&transaction.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
+}
