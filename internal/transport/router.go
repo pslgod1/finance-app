@@ -28,6 +28,7 @@ func (router *Router) SetupRoutes() *mux.Router {
 	muxRouter.HandleFunc("/api/users/{userId}/transactions", router.transactionHandler.HandleGetTransactions).Methods("GET")
 	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleUpdateTransaction).Methods("PUT")
 	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleDeleteTransaction).Methods("DELETE")
+	muxRouter.HandleFunc("/api/users/{userId}/statistics", router.transactionHandler.HandleGetStatistics).Methods("GET")
 
 	return muxRouter
 }
