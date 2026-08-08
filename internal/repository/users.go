@@ -50,3 +50,9 @@ func (r *Repository) GetUserByID(ctx context.Context, id int) (*model.User, erro
 
 	return user, nil
 }
+
+// dlya Admina
+func (r *Repository) DeleteUser(ctx context.Context, id int) error {
+	_, err := r.Pool.Exec(ctx, `DELETE FROM users WHERE id = $1`, id)
+	return err
+}

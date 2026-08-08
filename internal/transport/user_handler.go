@@ -104,3 +104,32 @@ func (h *UserHandler) HandleGetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (h *UserHandler) HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.DeleteUser(r.Context(), id)
+	if err != nil {
+		if err.Error() == "нельзя удалить администратора" {
+			errResp := dto.NewErrorResponse(err)
+			http.Error(w, errResp.ToString(), http.StatusForbidden)
+			return
+		}
+		if errors.Is(err, pgx.ErrNoRows) {
+			errResp := dto.NewErrorResponse(fmt.Errorf("пользователь не найден"))
+			http.Error(w, errResp.ToString(), http.StatusNotFound)
+			return
+		}
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

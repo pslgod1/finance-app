@@ -19,17 +19,18 @@ func NewRouter(userHandler *UserHandler, transactionHandler *TransactionHandler)
 	}
 }
 
-func (router *Router) SetupRoutes() *mux.Router {
+func (r *Router) SetupRoutes() *mux.Router {
 	muxRouter := mux.NewRouter()
-	muxRouter.HandleFunc("/api/users", router.userHandler.HandleCreateUser).Methods("POST")
-	muxRouter.HandleFunc("/api/users/{id}", router.userHandler.HandleGetUser).Methods("GET")
+	muxRouter.HandleFunc("/api/users", r.userHandler.HandleCreateUser).Methods("POST")
+	muxRouter.HandleFunc("/api/users/{id}", r.userHandler.HandleGetUser).Methods("GET")
 
-	muxRouter.HandleFunc("/api/users/{userId}/transactions", router.transactionHandler.HandleCreateTransaction).Methods("POST")
-	muxRouter.HandleFunc("/api/users/{userId}/transactions", router.transactionHandler.HandleGetTransactions).Methods("GET")
-	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleUpdateTransaction).Methods("PUT")
-	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", router.transactionHandler.HandleDeleteTransaction).Methods("DELETE")
-	muxRouter.HandleFunc("/api/users/{userId}/statistics", router.transactionHandler.HandleGetStatistics).Methods("GET")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions", r.transactionHandler.HandleCreateTransaction).Methods("POST")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions", r.transactionHandler.HandleGetTransactions).Methods("GET")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", r.transactionHandler.HandleUpdateTransaction).Methods("PUT")
+	muxRouter.HandleFunc("/api/users/{userId}/transactions/{id}", r.transactionHandler.HandleDeleteTransaction).Methods("DELETE")
+	muxRouter.HandleFunc("/api/users/{userId}/statistics", r.transactionHandler.HandleGetStatistics).Methods("GET")
 
+	muxRouter.HandleFunc("/api/admin/users/{id}", r.userHandler.HandleDeleteUser).Methods("DELETE")
 	return muxRouter
 }
 
