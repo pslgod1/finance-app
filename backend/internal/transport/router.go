@@ -19,6 +19,19 @@ func NewRouter(userHandler *UserHandler, transactionHandler *TransactionHandler)
 	}
 }
 
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (r *Router) SetupRoutes() *mux.Router {
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/api/users", r.userHandler.HandleCreateUser).Methods("POST")
@@ -36,7 +49,7 @@ func (r *Router) SetupRoutes() *mux.Router {
 
 func (r *Router) Start(port string) error {
 	router := r.SetupRoutes()
-	if err := http.ListenAndServe(":"+port, router); err != nil {
+	if err := http.ListenAndServe(":"+port, corsMiddleware(router)); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			return nil
 		}

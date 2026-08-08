@@ -15,7 +15,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Println(".env файл не найден")
 	}
 
