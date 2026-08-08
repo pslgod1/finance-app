@@ -165,3 +165,24 @@ func (h *TransactionHandler) HandleDeleteTransaction(w http.ResponseWriter, r *h
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *TransactionHandler) HandleGetStatistics(w http.ResponseWriter, r *http.Request) {
+	userID, err := strconv.Atoi(mux.Vars(r)["userId"])
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusBadRequest)
+		return
+	}
+	statistics, err := h.GetStatistics(r.Context(), userID)
+	if err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(statistics); err != nil {
+		errResp := dto.NewErrorResponse(err)
+		http.Error(w, errResp.ToString(), http.StatusInternalServerError)
+		return
+	}
+}
