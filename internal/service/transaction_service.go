@@ -57,3 +57,8 @@ func (t *TransactionService) DeleteTransaction(ctx context.Context, id int) erro
 	}
 	return t.repo.DeleteTransaction(ctx, id)
 }
+
+// STATISTICS!!!
+func (t *TransactionService) GetStatistics(ctx context.Context, userID int) (*model.Statistics, error) {
+	return t.repo.GetStatistics(ctx, userID)
+}
